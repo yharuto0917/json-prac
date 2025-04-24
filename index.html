@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON 練習サイト</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Interフォントの読み込み */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        /* Noto Sans JP フォントの読み込み (日本語表示改善) */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap');
+
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif; /* 日本語フォントを優先 */
+        }
+        /* エラーメッセージ用のスタイル */
+        .error-message {
+            color: #dc2626; /* red-600 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem; /* mt-1 */
+        }
+        /* 成功メッセージ用のスタイル */
+        .success-message {
+            color: #16a34a; /* green-600 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem; /* mt-1 */
+        }
+        /* コード表示用のスタイル */
+        pre {
+            background-color: #f3f4f6; /* gray-100 */
+            padding: 1rem; /* p-4 */
+            border-radius: 0.375rem; /* rounded-md */
+            overflow-x: auto; /* 横スクロール */
+            font-family: monospace; /* 等幅フォント */
+            font-size: 0.875rem; /* text-sm */
+        }
+        code {
+             font-family: monospace; /* 等幅フォント */
+        }
+        /* 問題文表示エリアのスタイル */
+        #problemDescription {
+            background-color: #eef2ff; /* indigo-50 */
+            border: 1px solid #c7d2fe; /* indigo-200 */
+            padding: 0.75rem 1rem; /* p-3 md:p-4 */
+            border-radius: 0.375rem; /* rounded-md */
+            margin-bottom: 1rem; /* mb-4 */
+            min-height: 50px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 p-4 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-md">
+
+        <h1 class="text-2xl md:text-3xl font-bold mb-6 text-gray-800 text-center">JSON 練習サイト</h1>
+
+        <div class="mb-8 border-b pb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">JSON 記述例</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="font-medium text-gray-600 mb-1">基本的なオブジェクト:</h3>
+                    <pre><code>{
+  "name": "山田 太郎",
+  "age": 30,
+  "isStudent": false
+}</code></pre>
+                </div>
+                <div>
+                    <h3 class="font-medium text-gray-600 mb-1">配列を含むオブジェクト:</h3>
+                    <pre><code>{
+  "city": "東京",
+  "languages": ["日本語", "英語"],
+  "zipCode": null
+}</code></pre>
+                </div>
+                 <div>
+                    <h3 class="font-medium text-gray-600 mb-1">ネストされたオブジェクト:</h3>
+                    <pre><code>{
+  "product": "ラップトップ",
+  "details": {
+    "brand": "ExampleBrand",
+    "price": 120000
+  }
+}</code></pre>
+                </div>
+                 <div>
+                    <h3 class="font-medium text-gray-600 mb-1">オブジェクトの配列:</h3>
+                    <pre><code>[
+  { "id": 1, "item": "ペン" },
+  { "id": 2, "item": "ノート" }
+]</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-8">
+             <h2 class="text-xl font-semibold mb-4 text-gray-700">練習問題</h2>
+             <button id="newProblemBtn" class="mb-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out">
+                新しい問題を表示
+            </button>
+             <div id="problemDescription">
+                 <p class="text-gray-600">上のボタンを押して、練習問題を表示してください。</p>
+             </div>
+        </div>
+
+
+        <div>
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">JSON を入力して検証</h2>
+            <div class="mb-4">
+                <label for="jsonInput" class="block text-sm font-medium text-gray-700 mb-1">JSON を入力してください:</label>
+                <textarea id="jsonInput" rows="10" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm" placeholder='ここにJSONを入力します... 例: { "key": "value" }'></textarea>
+            </div>
+
+            <button id="validateBtn" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-150 ease-in-out">
+                JSONを検証
+            </button>
+
+            <div id="result" class="mt-4 p-4 border rounded-md bg-gray-50 min-h-[50px]">
+                <p class="text-gray-500">検証結果はここに表示されます。</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // DOM要素の取得
+        const jsonInput = document.getElementById('jsonInput');
+        const validateBtn = document.getElementById('validateBtn');
+        const resultDiv = document.getElementById('result');
+        const newProblemBtn = document.getElementById('newProblemBtn'); // 新しい問題ボタン
+        const problemDescriptionDiv = document.getElementById('problemDescription'); // 問題文表示エリア
+
+        // 練習問題のリスト
+        const practiceProblems = [
+            { description: "あなたの名前（`name`）、年齢（`age`）、好きな食べ物（`favoriteFood`、文字列の配列）を含むJSONオブジェクトを作成してください。" },
+            { description: "商品名（`productName`）、価格（`price`、数値）、在庫があるか（`inStock`、真偽値）を表すJSONオブジェクトを作成してください。" },
+            { description: "都市名（`city`）、国名（`country`）を持つオブジェクトを要素とするJSON配列を作成してください。最低2つの都市を含めてください。" },
+            { description: "書籍のタイトル（`title`）、著者（`author`）、出版年（`publishedYear`）を含むJSONオブジェクトを作成してください。" },
+            { description: "ユーザーID（`userId`、数値）、ユーザー名（`username`）、メールアドレス（`email`）を持つJSONオブジェクトを作成してください。" },
+            { description: "`latitude`と`longitude`というキーで緯度経度（数値）を表すJSONオブジェクトを作成してください。" },
+            { description: "`name`（文字列）、`members`（文字列の配列）を持つチーム情報を表すJSONオブジェクトを作成してください。" },
+            { description: "`event`（イベント名、文字列）、`date`（日付、`YYYY-MM-DD`形式の文字列）、`location`（場所、文字列）を含むJSONオブジェクトを作成してください。" },
+            { description: "空のJSONオブジェクト `{}` を作成してください。" },
+            { description: "空のJSON配列 `[]` を作成してください。" }
+        ];
+
+        let currentProblemIndex = -1; // 現在表示している問題のインデックス
+
+        // 新しい問題を表示する関数
+        function displayNewProblem() {
+            // 前回と同じ問題が連続しないようにする簡単な試み
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * practiceProblems.length);
+            } while (practiceProblems.length > 1 && randomIndex === currentProblemIndex); // 問題が2つ以上あれば、前回と同じインデックスは避ける
+
+            currentProblemIndex = randomIndex;
+            const problem = practiceProblems[currentProblemIndex];
+            problemDescriptionDiv.innerHTML = `<p class="text-gray-800">${problem.description}</p>`; // 問題文を表示
+            // 入力欄と結果欄をクリア（任意）
+            // jsonInput.value = '';
+            // resultDiv.innerHTML = '<p class="text-gray-500">検証結果はここに表示されます。</p>';
+            // resultDiv.className = 'mt-4 p-4 border rounded-md bg-gray-50 min-h-[50px] border-gray-300'; // スタイルをリセット
+        }
+
+        // 新しい問題ボタンクリック時のイベントリスナー
+        newProblemBtn.addEventListener('click', displayNewProblem);
+
+        // 検証ボタンクリック時のイベントリスナー (変更なし)
+        validateBtn.addEventListener('click', () => {
+            const inputText = jsonInput.value.trim();
+
+            resultDiv.innerHTML = '';
+            // クラス名をリセット（より安全な方法）
+            resultDiv.className = 'mt-4 p-4 border rounded-md bg-gray-50 min-h-[50px]';
+
+
+            if (!inputText) {
+                resultDiv.innerHTML = '<p class="text-yellow-600 font-medium">JSONを入力してください。</p>';
+                 resultDiv.classList.add('border-yellow-500', 'bg-yellow-50');
+                return;
+            }
+
+            try {
+                JSON.parse(inputText);
+                resultDiv.innerHTML = '<p class="success-message font-medium">✓ 有効なJSONです！</p>';
+                 resultDiv.classList.add('border-green-500', 'bg-green-50');
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error-message font-medium">✗ 無効なJSONです。</p>
+                    <p class="error-message mt-1">エラー内容: ${error.message}</p>
+                `;
+                 resultDiv.classList.add('border-red-500', 'bg-red-50');
+            }
+        });
+
+        // 初期状態で最初の問題を表示（任意）
+        // displayNewProblem();
+
+    </script>
+</body>
+</html>
